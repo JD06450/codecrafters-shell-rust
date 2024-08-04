@@ -55,9 +55,14 @@ pub fn pwd(_args: &Vec<String>) -> String {
 
 pub fn cd(args: &Vec<String>) -> String {
 	let new_dir = PathBuf::from(args[1].clone());
-	match env::set_current_dir(new_dir) {
+	match env::set_current_dir(&new_dir) {
 		Ok(_) => String::new(),
-		Err(e) => e.to_string()
+		Err(e) => {
+			let error_string = e.to_string();
+			let trunc_idx = error_string.find(" (").unwrap_or(error_string.len());
+
+			format!("cd: {}: {}", new_dir.display(), error_string[0..trunc_idx].to_owned())
+		}
 	}
 }
 

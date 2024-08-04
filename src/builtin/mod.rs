@@ -1,7 +1,18 @@
 #![allow(unused_imports)]
-use std::vec;
-use std::process;
 use lazy_static::lazy_static;
+use std::env::{self};
+use std::ffi::OsString;
+use std::path::PathBuf;
+use std::process;
+use std::str::FromStr;
+use std::vec;
+
+pub fn get_env_path() -> Option<Vec<PathBuf>> {
+	match env::var_os("PATH") {
+		Some(value) => Some(value.to_string_lossy().split(":").map(|s| PathBuf::from_str(s).unwrap()).collect()),
+		None => None
+	}
+}
 
 pub fn exit(args: &Vec<String>) -> String
 {
@@ -25,6 +36,19 @@ pub fn cmd_type (args: &Vec<String>) -> String
 	for cmd in *COMMAND_NAMES {
 		if str_to_find == cmd {return format!("{} is a shell builtin", cmd);}
 	}
+
+	#[allow(non_snake_case)]
+	let PATH = get_env_path();
+
+	if PATH.is_some() {
+		for exe_path in PATH.unwrap() {
+			let cmd_path = exe_path.join(str_to_find);
+			if cmd_path.exists() {
+				return format!("{} is {}", str_to_find, cmd_path.display())
+			}
+		}
+	}
+
 	format!("{}: not found", str_to_find)
 }
 

@@ -1,11 +1,9 @@
-pub mod builtin;
+mod builtin;
 
 #[allow(unused_imports)]
 use std::io::{self, Write};
-// use std::fmt;
 
-fn no_command_found(input: &String) -> String
-{
+fn no_command_found(input: &String) -> String {
 	format!("{}: command not found", input)
 }
 

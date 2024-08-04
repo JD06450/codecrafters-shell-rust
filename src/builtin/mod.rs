@@ -1,6 +1,7 @@
 #![allow(unused_imports)]
 use std::vec;
 use std::process;
+use lazy_static::lazy_static;
 
 pub fn exit(args: &Vec<String>) -> String
 {
@@ -18,9 +19,21 @@ pub fn echo (args: &Vec<String>) -> String
 	printed.join(" ")
 }
 
+pub fn cmd_type (args: &Vec<String>) -> String
+{
+	let str_to_find = &args[1];
+	for cmd in *COMMAND_NAMES {
+		if str_to_find == cmd {return format!("{} is a shell builtin", cmd);}
+	}
+	format!("{}: not found", str_to_find)
+}
 
-
-pub static COMMANDS: [(&'static str, fn(&Vec<String>) -> String); 2] = [
+pub static COMMANDS: [(&'static str, fn(&Vec<String>) -> String); 3] = [
 	("exit", exit),
-	("echo", echo)
+	("echo", echo),
+	("type", cmd_type)
 ];
+
+lazy_static! {
+	pub static ref COMMAND_NAMES: [&'static str; 3] = COMMANDS.map(|c| c.0);
+}

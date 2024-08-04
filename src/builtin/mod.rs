@@ -6,6 +6,8 @@ use std::path::PathBuf;
 use std::process;
 use std::str::FromStr;
 use std::vec;
+use dirs::home_dir;
+use regex::Regex;
 
 pub fn get_env_path() -> Option<Vec<PathBuf>> {
 	match env::var_os("PATH") {
@@ -54,7 +56,17 @@ pub fn pwd(_args: &Vec<String>) -> String {
 }
 
 pub fn cd(args: &Vec<String>) -> String {
-	let new_dir = PathBuf::from(args[1].clone());
+	let mut new_dir_string = args[1].clone();
+	let mut new_dir: PathBuf;
+
+	if new_dir_string.starts_with('~') {
+		new_dir = PathBuf::from(home_dir().unwrap_or(PathBuf::from("/")));
+		new_dir_string = Regex::new("^~/?").unwrap().replace(&new_dir_string, "").to_string();
+		new_dir.push(new_dir_string);
+	} else {
+		new_dir = PathBuf::from(args[1].clone());
+	}
+
 	match env::set_current_dir(&new_dir) {
 		Ok(_) => String::new(),
 		Err(e) => {

@@ -41,6 +41,7 @@ fn main() {
 		}
 
 		if command_found {
+			if output.len() < 1 {continue;}
 			println!("{}", output);
 			continue;
 		}

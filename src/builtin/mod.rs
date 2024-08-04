@@ -53,13 +53,22 @@ pub fn pwd(_args: &Vec<String>) -> String {
 	env::current_dir().unwrap().display().to_string()
 }
 
-pub static COMMANDS: [(&'static str, fn(&Vec<String>) -> String); 4] = [
+pub fn cd(args: &Vec<String>) -> String {
+	let new_dir = PathBuf::from(args[1].clone());
+	match env::set_current_dir(new_dir) {
+		Ok(_) => String::new(),
+		Err(e) => e.to_string()
+	}
+}
+
+pub static COMMANDS: [(&'static str, fn(&Vec<String>) -> String); 5] = [
 	("exit", exit),
 	("echo", echo),
 	("type", cmd_type),
-	("pwd", pwd)
+	("pwd", pwd),
+	("cd", cd)
 ];
 
 lazy_static! {
-	pub static ref COMMAND_NAMES: [&'static str; 4] = COMMANDS.map(|c| c.0);
+	pub static ref COMMAND_NAMES: [&'static str; 5] = COMMANDS.map(|c| c.0);
 }
